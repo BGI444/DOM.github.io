@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Page</title>
+    <style>
+        .dish {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        .order-input {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="menu">
+    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+        <?php
+        // Fetch dish data from the database
+        $query = "SELECT speisenname, preis, lagerbestand, bild FROM produktsortiment";
+        $result = mysqli_query($verbindung, $query);
+
+        if (mysqli_num_rows($result) > 0) {
+            while ($row = mysqli_fetch_assoc($result)) {
+                ?>
+                <div class="dish">
+                    <img src="<?php echo $row['bild']; ?>" alt="<?php echo $row['speisenname']; ?>">
+                    <h3><?php echo $row['speisenname']; ?></h3>
+                    <h4><?php echo $row['beschreibung']; ?></h4>
+                    <p>Preis: $<?php echo $row['preis']; ?></p>
+                    <p>Verfügbarkeit: <?php echo $row['lagerbestand']; ?></p>
+                    <label for="dishQuantity_<?php echo $row['speisenname']; ?>">Anzahl:</label>
+                    <input type="number" id="dishQuantity_<?php echo $row['speisenname']; ?>" class="order-input" name="dishQuantity[<?php echo $row['speisenname']; ?>]" min="0">
+                </div>
+                <?php
+            }
+        } else {
+            echo "No dishes found.";
+        }
+
+        // Free result set
+        mysqli_free_result($result);
+        ?>
+        <button type="submit">Bestellen</button>
+    </form>
+</div>
+
+</body>
+</html>
